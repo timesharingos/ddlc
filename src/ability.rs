@@ -1,5 +1,5 @@
 use std::{
-    cell::RefCell,
+    cell::{Ref, RefCell, RefMut},
     fmt::{self, Display, Formatter},
     rc::Rc,
 };
@@ -89,6 +89,32 @@ impl AbilityModifier {
             + self.modifier_negative.iter().sum::<i32>();
         self.current = Some(val);
         val
+    }
+}
+
+pub struct AbilityModifierHelper {
+    wrapper: Rc<RefCell<AbilityModifier>>,
+}
+
+impl AbilityModifierHelper {
+    pub fn get_cell(&self) -> Rc<RefCell<AbilityModifier>> {
+        self.wrapper.clone()
+    }
+
+    pub fn get_mut(&self) -> RefMut<'_, AbilityModifier> {
+        self.wrapper.borrow_mut()
+    }
+
+    pub fn get(&self) -> Ref<'_, AbilityModifier> {
+        self.wrapper.borrow()
+    }
+}
+
+impl From<AbilityModifier> for AbilityModifierHelper {
+    fn from(value: AbilityModifier) -> Self {
+        Self {
+            wrapper: Rc::new(RefCell::new(value)),
+        }
     }
 }
 
